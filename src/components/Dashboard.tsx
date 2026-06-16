@@ -1,73 +1,102 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { EmissionData } from '../lib/utils';
+import { GLOBAL_AVERAGE_FOOTPRINT, CATEGORY_COLORS } from '../lib/constants';
 import { Globe, Leaf } from 'lucide-react';
 
 interface DashboardProps {
+  /** The user's calculated emission data */
   data: EmissionData;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ data }) => {
-  const globalAverage = 4.0; // tons CO2/year per capita (world avg)
-  const isAboveAverage = data.total > globalAverage;
+/**
+ * Dashboard component that visualizes the user's carbon footprint.
+ * Displays total emissions vs. global average, a category breakdown bar chart,
+ * and a contextual message about their standing.
+ *
+ * Memoized to prevent re-renders when parent state changes unrelated to `data`.
+ */
+const DashboardComponent: React.FC<DashboardProps> = ({ data }) => {
+  /** Whether the user's footprint exceeds the global average */
+  const isAboveAverage = useMemo(() => data.total > GLOBAL_AVERAGE_FOOTPRINT, [data.total]);
 
-  const categories = [
-    { name: 'Transport', value: data.transport, color: '#ef4444' },
-    { name: 'Diet', value: data.diet, color: '#f59e0b' },
-    { name: 'Energy', value: data.energy, color: '#3b82f6' },
-    { name: 'Shopping', value: data.shopping, color: '#a855f7' },
-  ];
+  /** Category breakdown data for bar chart rendering */
+  const categories = useMemo(
+    () => [
+      { name: 'Transport', value: data.transport, color: CATEGORY_COLORS.transport },
+      { name: 'Diet', value: data.diet, color: CATEGORY_COLORS.diet },
+      { name: 'Energy', value: data.energy, color: CATEGORY_COLORS.energy },
+      { name: 'Shopping', value: data.shopping, color: CATEGORY_COLORS.shopping },
+    ],
+    [data.transport, data.diet, data.energy, data.shopping]
+  );
+
+  /** Maximum value for scaling bar widths */
+  const maxValue = useMemo(() => Math.max(data.total, 1), [data.total]);
 
   return (
-    <div className="glass-panel p-6 animate-fade-in" style={{ padding: '2rem' }}>
-      <h2 id="dash-heading" className="text-2xl font-bold mb-6" style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-primary)' }}>
+    <div className="glass-panel animate-fade-in" style={{ padding: '2rem' }}>
+      <h2 id="dash-heading" className="heading-section">
         <Globe aria-hidden="true" /> Your Impact Dashboard
       </h2>
 
       <section aria-labelledby="dash-heading">
+        {/* Stats cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-          <div style={{ padding: '1.5rem', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-lg)', textAlign: 'center' }}>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Total Emissions</p>
-            <p style={{ fontSize: '2.5rem', fontWeight: 'bold', color: isAboveAverage ? 'var(--error-color)' : 'var(--accent-primary)' }}>
-              {data.total.toFixed(1)} <span style={{ fontSize: '1rem', fontWeight: 'normal' }}>tons/yr</span>
+          <div className="stat-card">
+            <p className="stat-label">Total Emissions</p>
+            <p className="stat-value" style={{ color: isAboveAverage ? 'var(--error-color)' : 'var(--accent-primary)' }}>
+              {data.total.toFixed(1)} <span className="stat-unit">tons/yr</span>
             </p>
           </div>
 
-          <div style={{ padding: '1.5rem', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-lg)', textAlign: 'center' }}>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Global Average</p>
-            <p style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>
-              {globalAverage.toFixed(1)} <span style={{ fontSize: '1rem', fontWeight: 'normal' }}>tons/yr</span>
+          <div className="stat-card">
+            <p className="stat-label">Global Average</p>
+            <p className="stat-value" style={{ color: 'var(--text-primary)' }}>
+              {GLOBAL_AVERAGE_FOOTPRINT.toFixed(1)} <span className="stat-unit">tons/yr</span>
             </p>
           </div>
         </div>
 
+        {/* Category breakdown */}
         <div>
-          <h3 style={{ marginBottom: '1rem', color: 'var(--text-secondary)' }}>Breakdown</h3>
+          <h3 style={{ marginBottom: '1rem' }} className="text-muted">Breakdown</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {categories.map(cat => (
-              <div key={cat.name} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <span style={{ width: '80px' }}>{cat.name}</span>
-                <div style={{ flex: 1, height: '12px', background: 'var(--bg-secondary)', borderRadius: '6px', overflow: 'hidden' }}>
-                  <div style={{ 
-                    height: '100%', 
-                    width: `${(cat.value / Math.max(data.total, 1)) * 100}%`, 
-                    background: cat.color 
-                  }}></div>
+            {categories.map((cat) => (
+              <div key={cat.name} className="breakdown-row">
+                <span className="breakdown-label">{cat.name}</span>
+                <div className="breakdown-track">
+                  <div
+                    style={{
+                      height: '100%',
+                      width: `${(cat.value / maxValue) * 100}%`,
+                      background: cat.color,
+                      transition: 'width 0.3s ease',
+                    }}
+                  />
                 </div>
-                <span style={{ width: '40px', textAlign: 'right' }}>{cat.value.toFixed(1)}</span>
+                <span className="breakdown-value">{cat.value.toFixed(1)}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div style={{ marginTop: '2rem', padding: '1.5rem', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <Leaf size={32} color={isAboveAverage ? 'var(--error-color)' : 'var(--accent-primary)'} aria-hidden="true" />
+        {/* Contextual message */}
+        <div className="info-banner">
+          <Leaf
+            size={32}
+            color={isAboveAverage ? 'var(--error-color)' : 'var(--accent-primary)'}
+            aria-hidden="true"
+          />
           <p>
-            {isAboveAverage 
-              ? "Your footprint is above the global average. Check the EcoAssistant for personalized reduction strategies!" 
-              : "Great job! Your footprint is below the global average. Keep up the good work and see if you can reduce even further!"}
+            {isAboveAverage
+              ? 'Your footprint is above the global average. Check the EcoAssistant for personalized reduction strategies!'
+              : 'Great job! Your footprint is below the global average. Keep up the good work and see if you can reduce even further!'}
           </p>
         </div>
       </section>
     </div>
   );
 };
+
+/** Memoized Dashboard to prevent unnecessary re-renders */
+export const Dashboard = React.memo(DashboardComponent);

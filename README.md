@@ -1,6 +1,6 @@
 # 🌍 Carbon Footprint Awareness Platform
 
-**Challenge 3 Submission**
+**PromptWars Challenge 3 Submission**
 
 This platform helps individuals **understand, track, and reduce** their carbon footprint through simple actions and personalized AI insights.
 
@@ -12,9 +12,15 @@ This platform helps individuals **understand, track, and reduce** their carbon f
 **Vertical:** Environmental Sustainability / Carbon Footprint Tracking
 
 The problem statement required building a solution to help individuals understand their carbon footprint and reduce it through simple actions. This platform achieves this via:
-1.  **Understand**: A multi-step Calculator form that assesses transport, diet, energy, and shopping habits to provide a heuristic footprint estimation.
-2.  **Track**: A Dashboard visualizing the total emissions against global averages, giving the user context about their impact.
-3.  **Reduce**: An AI-powered `EcoAssistant` that takes the user's specific footprint breakdown and provides hyper-personalized, actionable reduction strategies.
+
+1. **Understand**: A multi-step Calculator that assesses transport, diet, energy, and shopping habits to provide a heuristic footprint estimation.
+2. **Track**: A Dashboard visualizing total emissions against global averages, with data persisted across sessions via `localStorage`.
+3. **Reduce**: An AI-powered `EcoAssistant` with real-time streaming responses, plus a personalized `ActionPlan` with "Green Pledges" the user can commit to.
+
+### Assumptions
+- Emission factors are based on EPA and IPCC heuristic data for individual lifestyle assessment.
+- The global average footprint is set to 4.0 tons CO2/year per capita (world average).
+- The AI model used is `gpt-4o-mini` via an OpenAI-compatible proxy API.
 
 ## 🛠️ Technical Stack
 
@@ -23,56 +29,92 @@ The problem statement required building a solution to help individuals understan
 | **Frontend** | React 18, TypeScript | Robust, type-safe UI |
 | **Styling** | Vanilla CSS (Custom Properties) | Eco-Premium Dark Theme with Glassmorphism |
 | **Icons** | Lucide React | Lightweight, accessible iconography |
-| **AI Engine** | OpenAI API (Streaming) & React Markdown | Powers the `EcoAssistant` for real-time streaming advice with formatted text |
-| **Deployment** | Docker, Nginx, Google Cloud Run | Scalable production hosting |
-| **Testing** | Jest, React Testing Library | Ensuring reliability and catching regressions |
+| **AI Engine** | OpenAI API (Streaming) & React Markdown | Powers the `EcoAssistant` for real-time streaming advice |
+| **State** | Custom Hooks + localStorage | Persistent footprint data and pledge tracking |
+| **Deployment** | Vercel | Automated CI/CD with GitHub integration |
+| **Testing** | Jest, React Testing Library | 46 tests across 5 test suites |
+
+## 📁 Project Structure
+
+```
+src/
+├── components/
+│   ├── ActionPlan.tsx       # Green Pledges based on footprint breakdown
+│   ├── Calculator.tsx       # 4-step footprint estimation wizard
+│   ├── Dashboard.tsx        # Emissions visualization & comparison
+│   ├── EcoAssistant.tsx     # AI chat with streaming markdown responses
+│   ├── ErrorBoundary.tsx    # Graceful runtime error recovery
+│   └── __tests__/           # Co-located component test files
+├── hooks/
+│   ├── useCalculator.ts     # Calculator business logic (step mgmt, emission calc)
+│   ├── useChat.ts           # Chat state, streaming, auto-scroll logic
+│   └── useLocalStorage.ts   # Generic persistent state hook
+├── lib/
+│   ├── constants.ts         # All magic numbers, emission factors, pledge data
+│   ├── openai.ts            # OpenAI streaming API integration
+│   ├── utils.ts             # Sanitization, rate limiting, shared types
+│   └── __tests__/           # Co-located utility test files
+├── App.tsx                  # Root component with lazy loading & ErrorBoundary
+├── index.tsx                # Entry point with Web Vitals monitoring
+└── index.css                # Complete design system (no inline styles)
+```
 
 ## 🛡️ Security Features
-- **Token Bucket Rate Limiter**: The AI chat requests are protected by a client-side token bucket rate limiter to prevent API spam and abuse.
-- **Input Sanitization**: All user inputs sent to the AI assistant are scrubbed of HTML tags, `javascript:` protocols, and data URIs to prevent XSS attacks.
-- **Length Constraints**: Inputs are truncated to 1000 characters to prevent payload bloat.
-- **Graceful Error Boundaries**: The chat gracefully handles network/API errors without crashing the app.
+- **Token Bucket Rate Limiter**: Client-side token bucket rate limiter (`RateLimiter` class) prevents API spam and abuse with configurable refill rates.
+- **Input Sanitization**: All user inputs are scrubbed of HTML tags, `javascript:` protocols, event handlers, and data URIs via `sanitizeInput()`.
+- **Length Constraints**: Inputs are truncated to 1000 characters (configurable via `MAX_INPUT_LENGTH` constant).
+- **Error Boundary**: A React Error Boundary component catches runtime crashes and renders a recovery UI instead of a blank screen.
 
 ## ♿ Accessibility Features
-- **Semantic Landmarks**: Uses `<header>`, `<main>`, `<footer>`, and `<section>` to ensure proper document structure for screen readers.
-- **ARIA Attributes**: Uses `aria-live="polite"`, `role="log"`, and `role="status"` in the chat and loading states to announce dynamic content changes.
-- **Keyboard Navigation**: All buttons and interactive elements are focusable and usable via keyboard. Form progression is linear and intuitive.
-- **Contrast**: The Eco-Premium dark theme maintains high contrast ratios for readability.
+- **Semantic Landmarks**: Uses `<header>`, `<main>`, `<footer>`, and `<section>` with proper `role` and `aria-labelledby` attributes.
+- **ARIA Attributes**: `aria-live="polite"`, `role="log"`, `role="status"`, and `aria-pressed` (on pledge toggles) for dynamic content.
+- **Keyboard Navigation**: All buttons have `aria-label` attributes; form progression is linear and intuitive.
+- **Contrast**: The Eco-Premium dark theme maintains WCAG-compliant contrast ratios.
 
 ## ⚡ Performance Optimizations (Efficiency)
-- **Lazy Loading**: The `Dashboard` and `EcoAssistant` components are loaded dynamically via `React.lazy()` and `<Suspense>` to reduce the initial bundle size.
-- **Debounced Updates**: State updates are managed efficiently.
-- **Vanilla CSS**: Avoids the overhead of heavy CSS-in-JS libraries or large frameworks.
+- **Code Splitting**: `Dashboard`, `EcoAssistant`, and `ActionPlan` are loaded via `React.lazy()` + `<Suspense>` to minimize initial bundle size.
+- **Memoization**: All components wrapped in `React.memo`; handlers use `useCallback`; derived values use `useMemo`.
+- **CSS Containment**: `contain: content` on glass panels and `will-change` on animated elements for compositing optimization.
+- **Resource Hints**: `<link rel="preconnect">` and `<link rel="dns-prefetch">` for external domains in `index.html`.
+- **Web Vitals Monitoring**: `reportWebVitals` wired to log CLS, FID, FCP, LCP, and TTFB metrics.
+- **Zero Dead Dependencies**: No unused packages (removed `framer-motion`), no dead files.
+- **Custom Hooks**: Business logic extracted from UI components into reusable hooks for separation of concerns and reduced re-renders.
 
-## 🧪 Testing Achievement
-Achieved high test coverage with **35+ robust unit and integration tests** ensuring code quality across:
-- Security Utility Verification
-- Application Routing & Rendering
-- Calculator Progression State
-- Dashboard Visual Logic
-- AI Assistant Message Flow
+## 🧪 Testing
 
-## 🐳 Running Locally & Deployment
+**46 tests across 5 test suites**, co-located alongside the code they test:
 
-### Local Development
-1. Clone the repository and navigate to the project directory.
-2. Create a `.env` file based on `.env.example` and add your OpenAI proxy keys.
-3. Install dependencies: `npm install`
-4. Start the server: `npm start`
+| Suite | Tests | Covers |
+| :--- | :---: | :--- |
+| `utils.test.ts` | 13 | XSS sanitization, rate limiter behavior |
+| `App.test.tsx` | 9 | App layout, landmarks, routing |
+| `Calculator.test.tsx` | 8 | Step progression, emission calc, a11y |
+| `Dashboard.test.tsx` | 7 | Rendering, above/below avg, a11y |
+| `EcoAssistant.test.tsx` | 9 | Chat interaction, input, streaming, a11y |
 
-### Deploying to Google Cloud Run (Free Tier Eligible)
-Because Cloud Run provides a generous free tier, this project includes a multi-stage `Dockerfile`.
-
+Run tests:
 ```bash
-# 1. Build the Docker image
-docker build -t carbon-platform .
-
-# 2. Deploy to Cloud Run (replace PROJECT_ID and YOUR_PROXY_KEY)
-gcloud run deploy carbon-platform \\
-  --source . \\
-  --region us-central1 \\
-  --allow-unauthenticated \\
-  --project PROJECT_ID \\
-  --port 8080 \\
-  --set-build-env-vars REACT_APP_OPENAI_API_KEY=YOUR_PROXY_KEY,REACT_APP_OPENAI_BASE_URL=YOUR_PROXY_BASE_URL
+npm test
 ```
+
+## 🚀 Running Locally
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/bcvinay8072/PromptWars-CarbonFootPrint.git
+   cd PromptWars-CarbonFootPrint/carbon-platform
+   ```
+2. Create a `.env` file based on `.env.example` and add your OpenAI proxy keys:
+   ```env
+   REACT_APP_OPENAI_API_KEY=your_key_here
+   REACT_APP_OPENAI_BASE_URL=https://aipipe.org/openai/v1
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. Start the development server:
+   ```bash
+   npm start
+   ```
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
