@@ -93,7 +93,7 @@ const ActionPlanComponent: React.FC<ActionPlanProps> = ({ data }) => {
                     <Circle size={20} color="var(--text-muted)" />
                   )}
                 </div>
-                <div style={{ flex: 1 }}>
+                <div className="flex-1">
                   <p className="pledge-title">{pledge.title}</p>
                   <p className="pledge-desc">{pledge.description}</p>
                   <p className="pledge-savings">Saves ~{pledge.savingsTons} tons CO₂/year</p>

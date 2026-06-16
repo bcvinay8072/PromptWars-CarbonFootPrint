@@ -39,7 +39,7 @@ The problem statement required building a solution to help individuals understan
 
 ```
 api/
-└── chat.js                  # Vercel serverless function — proxies OpenAI server-side
+└── chat.ts                  # Vercel serverless function — proxies OpenAI server-side
 src/
 ├── components/
 │   ├── ActionPlan.tsx       # Green Pledges based on footprint breakdown

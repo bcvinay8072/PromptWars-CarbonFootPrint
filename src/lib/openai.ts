@@ -50,7 +50,7 @@ const streamFromServer = async (
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error((errorData as any).error || `Server error: ${response.status}`);
+    throw new Error((errorData as { error?: string }).error || `Server error: ${response.status}`);
   }
 
   const reader = response.body!.getReader();

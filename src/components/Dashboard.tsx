@@ -38,7 +38,7 @@ const DashboardComponent: React.FC<DashboardProps> = ({ data }) => {
         <div className="stats-grid">
           <div className="stat-card">
             <p className="stat-label">Total Emissions</p>
-            <p className="stat-value" style={{ color: isAboveAverage ? 'var(--error-color)' : 'var(--accent-primary)' }}>
+            <p className={`stat-value ${isAboveAverage ? 'text-error' : 'text-accent'}`}>
               {data.total.toFixed(1)} <span className="stat-unit">tons/yr</span>
             </p>
           </div>
@@ -57,7 +57,10 @@ const DashboardComponent: React.FC<DashboardProps> = ({ data }) => {
               <div key={cat.name} className="breakdown-row">
                 <span className="breakdown-label">{cat.name}</span>
                 <div className="breakdown-track">
-                  <div style={{ height: '100%', width: `${(cat.value / maxValue) * 100}%`, background: cat.color, transition: 'width 0.3s ease' }} />
+                  <div
+                    className="breakdown-fill"
+                    style={{ width: `${(cat.value / maxValue) * 100}%`, background: cat.color }}
+                  />
                 </div>
                 <span className="breakdown-value">{cat.value.toFixed(1)}</span>
               </div>

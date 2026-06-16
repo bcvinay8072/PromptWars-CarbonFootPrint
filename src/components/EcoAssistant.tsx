@@ -36,8 +36,7 @@ const EcoAssistantComponent: React.FC<EcoAssistantProps> = ({ footprintData }) =
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`msg-row ${msg.isUser ? 'msg-row-user' : 'msg-row-bot'}`}
-            style={{ maxWidth: '85%' }}
+            className={`msg-row msg-bubble-wrapper ${msg.isUser ? 'msg-row-user' : 'msg-row-bot'}`}
           >
             {!msg.isUser && (
               <div className="msg-bot-icon">
@@ -45,8 +44,7 @@ const EcoAssistantComponent: React.FC<EcoAssistantProps> = ({ footprintData }) =
               </div>
             )}
             <div
-              className={`chat-bubble ${msg.isUser ? 'chat-bubble-user' : 'chat-bubble-bot'}`}
-              style={{ color: msg.isError ? 'var(--error-color)' : undefined }}
+              className={`chat-bubble ${msg.isUser ? 'chat-bubble-user' : 'chat-bubble-bot'} ${msg.isError ? 'text-error' : ''}`}
             >
               {msg.isUser ? (
                 msg.text
@@ -81,12 +79,7 @@ const EcoAssistantComponent: React.FC<EcoAssistantProps> = ({ footprintData }) =
           type="submit"
           aria-label="Send message"
           disabled={isLoading || !input.trim()}
-          className="chat-send-btn"
-          style={{
-            background: isLoading || !input.trim() ? 'var(--bg-secondary)' : 'var(--accent-primary)',
-            color: isLoading || !input.trim() ? 'var(--text-muted)' : 'var(--bg-primary)',
-            borderColor: isLoading || !input.trim() ? 'var(--border-color)' : 'var(--accent-primary)',
-          }}
+          className={`chat-send-btn ${isLoading || !input.trim() ? 'btn-disabled' : 'btn-active'}`}
         >
           {isLoading ? <Loader2 className="animate-spin" size={20} /> : <Send size={20} />}
         </button>

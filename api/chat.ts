@@ -1,4 +1,5 @@
-const OpenAI = require('openai');
+import OpenAI from 'openai';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 /**
  * Vercel Serverless Function — /api/chat
@@ -10,14 +11,14 @@ const OpenAI = require('openai');
  */
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || process.env.REACT_APP_OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY || process.env.REACT_APP_OPENAI_API_KEY || '',
   baseURL:
     process.env.OPENAI_BASE_URL ||
     process.env.REACT_APP_OPENAI_BASE_URL ||
     'https://api.openai.com/v1',
 });
 
-module.exports = async function handler(req, res) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -83,4 +84,4 @@ module.exports = async function handler(req, res) {
   }
 
   res.end();
-};
+}

@@ -47,20 +47,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     if (this.state.hasError) {
       return (
         <div
-          className="glass-panel"
+          className="glass-panel error-container"
           role="alert"
           aria-live="assertive"
-          style={{
-            padding: '2rem',
-            textAlign: 'center',
-            maxWidth: '500px',
-            margin: '4rem auto',
-          }}
         >
-          <h2 style={{ color: 'var(--error-color)', marginBottom: '1rem' }}>
+          <h2 className="text-error mb-md">
             Something went wrong
           </h2>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+          <p className="text-secondary-clr mb-lg">
             {this.state.errorMessage || 'An unexpected error occurred.'}
           </p>
           <button
