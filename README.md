@@ -5,8 +5,8 @@
 This platform helps individuals **understand, track, and reduce** their carbon footprint through simple actions and personalized AI insights.
 
 ## 🔗 Live Links
-- **GitHub Repository**: [Link here]
-- **Live Demo**: [Cloud Run URL here]
+- **GitHub Repository**: [https://github.com/bcvinay8072/PromptWars-CarbonFootPrint](https://github.com/bcvinay8072/PromptWars-CarbonFootPrint)
+- **Live Demo**: [https://prompt-wars-carbon-foot-print.vercel.app](https://prompt-wars-carbon-foot-print.vercel.app)
 
 ## 🎯 Chosen Vertical & Problem Statement
 **Vertical:** Environmental Sustainability / Carbon Footprint Tracking
@@ -23,7 +23,7 @@ The problem statement required building a solution to help individuals understan
 | **Frontend** | React 18, TypeScript | Robust, type-safe UI |
 | **Styling** | Vanilla CSS (Custom Properties) | Eco-Premium Dark Theme with Glassmorphism |
 | **Icons** | Lucide React | Lightweight, accessible iconography |
-| **AI Engine** | OpenAI API | Powers the `EcoAssistant` for personalized advice |
+| **AI Engine** | OpenAI API (Streaming) & React Markdown | Powers the `EcoAssistant` for real-time streaming advice with formatted text |
 | **Deployment** | Docker, Nginx, Google Cloud Run | Scalable production hosting |
 | **Testing** | Jest, React Testing Library | Ensuring reliability and catching regressions |
 
