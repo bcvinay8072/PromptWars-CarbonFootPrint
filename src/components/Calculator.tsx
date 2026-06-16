@@ -12,9 +12,6 @@ interface CalculatorProps {
  * Multi-step carbon footprint calculator component.
  * Guides users through 4 categories (transport, diet, energy, shopping)
  * to estimate their annual carbon footprint using heuristic emission factors.
- *
- * Uses the `useCalculator` custom hook for all business logic,
- * keeping this component focused purely on rendering.
  */
 const CalculatorComponent: React.FC<CalculatorProps> = ({ onComplete }) => {
   const {
@@ -27,18 +24,18 @@ const CalculatorComponent: React.FC<CalculatorProps> = ({ onComplete }) => {
   } = useCalculator(onComplete);
 
   return (
-    <div className="glass-panel animate-fade-in" style={{ padding: '2rem' }}>
+    <div className="glass-panel animate-fade-in section-pad">
       <h2 id="calc-heading" className="heading-section">
         Calculate Your Footprint
       </h2>
 
       {step === 1 && (
         <section aria-labelledby="calc-heading">
-          <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <h3 className="step-title">
             <Car aria-hidden="true" /> Transportation
           </h3>
-          <p style={{ marginBottom: '1rem' }} className="text-muted">How do you primarily commute?</p>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <p className="step-description text-muted">How do you primarily commute?</p>
+          <div className="options-row">
             <button aria-label="Drive a personal car" onClick={() => handleTransport('car')} className="btn-option">Personal Car</button>
             <button aria-label="Use public transit" onClick={() => handleTransport('public')} className="btn-option">Public Transit</button>
             <button aria-label="Bike or walk" onClick={() => handleTransport('bike')} className="btn-option">Bike / Walk</button>
@@ -48,11 +45,11 @@ const CalculatorComponent: React.FC<CalculatorProps> = ({ onComplete }) => {
 
       {step === 2 && (
         <section aria-labelledby="calc-heading">
-          <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <h3 className="step-title">
             <Utensils aria-hidden="true" /> Diet
           </h3>
-          <p style={{ marginBottom: '1rem' }} className="text-muted">What best describes your diet?</p>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <p className="step-description text-muted">What best describes your diet?</p>
+          <div className="options-row">
             <button aria-label="Meat in most meals" onClick={() => handleDiet('meat')} className="btn-option">Meat Heavy</button>
             <button aria-label="Vegetarian diet" onClick={() => handleDiet('vegetarian')} className="btn-option">Vegetarian</button>
             <button aria-label="Vegan diet" onClick={() => handleDiet('vegan')} className="btn-option">Vegan</button>
@@ -62,11 +59,11 @@ const CalculatorComponent: React.FC<CalculatorProps> = ({ onComplete }) => {
 
       {step === 3 && (
         <section aria-labelledby="calc-heading">
-          <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <h3 className="step-title">
             <Zap aria-hidden="true" /> Home Energy
           </h3>
-          <p style={{ marginBottom: '1rem' }} className="text-muted">How would you describe your home energy usage?</p>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <p className="step-description text-muted">How would you describe your home energy usage?</p>
+          <div className="options-row">
             <button aria-label="High energy usage" onClick={() => handleEnergy('high')} className="btn-option">High (Large home/AC)</button>
             <button aria-label="Medium energy usage" onClick={() => handleEnergy('medium')} className="btn-option">Medium (Average)</button>
             <button aria-label="Low energy usage" onClick={() => handleEnergy('low')} className="btn-option">Low (Efficient/Solar)</button>
@@ -76,11 +73,11 @@ const CalculatorComponent: React.FC<CalculatorProps> = ({ onComplete }) => {
 
       {step === 4 && (
         <section aria-labelledby="calc-heading">
-          <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <h3 className="step-title">
             <ShoppingBag aria-hidden="true" /> Shopping
           </h3>
-          <p style={{ marginBottom: '1rem' }} className="text-muted">How often do you buy new clothes/electronics?</p>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <p className="step-description text-muted">How often do you buy new clothes/electronics?</p>
+          <div className="options-row">
             <button aria-label="Frequent shopping" onClick={() => handleShopping('frequent')} className="btn-option">Frequently</button>
             <button aria-label="Moderate shopping" onClick={() => handleShopping('moderate')} className="btn-option">Moderately</button>
             <button aria-label="Rare shopping" onClick={() => handleShopping('rare')} className="btn-option">Rarely (Thrift/Repair)</button>
@@ -95,5 +92,5 @@ const CalculatorComponent: React.FC<CalculatorProps> = ({ onComplete }) => {
   );
 };
 
-/** Memoized Calculator to prevent unnecessary re-renders from parent state changes */
+/** Memoized Calculator to prevent unnecessary re-renders */
 export const Calculator = React.memo(CalculatorComponent);

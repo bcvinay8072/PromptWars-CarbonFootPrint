@@ -12,8 +12,7 @@ interface ActionPlanProps {
 /**
  * ActionPlan component that renders personalized "Green Pledges" based on
  * the user's carbon footprint breakdown. Users can commit to specific
- * actions to reduce their environmental impact, directly addressing the
- * "simple actions" requirement of the problem statement.
+ * actions to reduce their environmental impact.
  *
  * Pledges are persisted via localStorage so commitments survive page refreshes.
  */
@@ -23,7 +22,6 @@ const ActionPlanComponent: React.FC<ActionPlanProps> = ({ data }) => {
   /** Filters pledges relevant to the user's footprint levels */
   const relevantPledges = useMemo(() => {
     const pledges: (PledgeAction & { category: string })[] = [];
-
     const categoryMap: Record<string, number> = {
       transport: data.transport,
       diet: data.diet,
@@ -39,7 +37,6 @@ const ActionPlanComponent: React.FC<ActionPlanProps> = ({ data }) => {
         }
       }
     }
-
     return pledges;
   }, [data]);
 
@@ -63,47 +60,22 @@ const ActionPlanComponent: React.FC<ActionPlanProps> = ({ data }) => {
   }, [relevantPledges, committedPledges]);
 
   return (
-    <div className="glass-panel animate-fade-in" style={{ padding: '2rem' }}>
-      <h2
-        id="action-heading"
-        style={{
-          marginBottom: '1.5rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem',
-          color: 'var(--accent-primary)',
-        }}
-      >
+    <div className="glass-panel animate-fade-in section-pad">
+      <h2 id="action-heading" className="heading-section">
         <Leaf aria-hidden="true" /> Your Green Action Plan
       </h2>
 
       <section aria-labelledby="action-heading">
-        {/* Savings summary */}
         {totalSavings > 0 && (
-          <div
-            className="savings-banner"
-            role="status"
-            aria-live="polite"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-              padding: '1rem',
-              background: 'rgba(34, 197, 94, 0.1)',
-              borderRadius: 'var(--radius-md)',
-              marginBottom: '1.5rem',
-              border: '1px solid var(--accent-primary)',
-            }}
-          >
+          <div className="savings-banner" role="status" aria-live="polite">
             <TrendingDown size={24} color="var(--accent-primary)" aria-hidden="true" />
-            <p style={{ color: 'var(--accent-primary)', fontWeight: 600 }}>
+            <p className="savings-text">
               Your pledges could save <strong>{totalSavings.toFixed(1)} tons CO₂/year</strong>!
             </p>
           </div>
         )}
 
-        {/* Pledge list */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <div className="breakdown-list">
           {relevantPledges.map((pledge) => {
             const isCommitted = committedPledges.includes(pledge.id);
             return (
@@ -112,25 +84,9 @@ const ActionPlanComponent: React.FC<ActionPlanProps> = ({ data }) => {
                 onClick={() => togglePledge(pledge.id)}
                 aria-pressed={isCommitted}
                 aria-label={`${isCommitted ? 'Remove' : 'Commit to'} pledge: ${pledge.title}`}
-                className={`pledge-item ${isCommitted ? 'pledge-committed' : ''}`}
-                style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '0.75rem',
-                  padding: '1rem',
-                  background: isCommitted
-                    ? 'rgba(34, 197, 94, 0.08)'
-                    : 'var(--bg-secondary)',
-                  border: `1px solid ${isCommitted ? 'var(--accent-primary)' : 'var(--border-color)'}`,
-                  borderRadius: 'var(--radius-md)',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  color: 'var(--text-primary)',
-                  transition: 'all 0.2s',
-                  width: '100%',
-                }}
+                className={`pledge-item ${isCommitted ? 'pledge-committed' : 'pledge-default'}`}
               >
-                <div style={{ marginTop: '2px', flexShrink: 0 }}>
+                <div className="pledge-icon">
                   {isCommitted ? (
                     <CheckCircle size={20} color="var(--accent-primary)" />
                   ) : (
@@ -138,20 +94,9 @@ const ActionPlanComponent: React.FC<ActionPlanProps> = ({ data }) => {
                   )}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <p style={{ fontWeight: 600, marginBottom: '0.25rem' }}>{pledge.title}</p>
-                  <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                    {pledge.description}
-                  </p>
-                  <p
-                    style={{
-                      fontSize: '0.75rem',
-                      color: 'var(--accent-primary)',
-                      marginTop: '0.25rem',
-                      fontWeight: 500,
-                    }}
-                  >
-                    Saves ~{pledge.savingsTons} tons CO₂/year
-                  </p>
+                  <p className="pledge-title">{pledge.title}</p>
+                  <p className="pledge-desc">{pledge.description}</p>
+                  <p className="pledge-savings">Saves ~{pledge.savingsTons} tons CO₂/year</p>
                 </div>
               </button>
             );
@@ -159,7 +104,7 @@ const ActionPlanComponent: React.FC<ActionPlanProps> = ({ data }) => {
         </div>
 
         {relevantPledges.length === 0 && (
-          <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem' }}>
+          <p className="empty-pledges">
             Great news! Your footprint is already very low. Keep it up! 🌱
           </p>
         )}

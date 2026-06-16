@@ -21,12 +21,7 @@ const ActionPlan = lazy(() =>
  * Defined outside App to prevent re-creation on every render cycle.
  */
 const LoadingFallback: React.FC = () => (
-  <div
-    role="status"
-    aria-label="Loading component"
-    className="text-muted"
-    style={{ padding: '2rem', textAlign: 'center' }}
-  >
+  <div role="status" aria-label="Loading component" className="loading-fallback text-muted">
     Loading...
   </div>
 );
@@ -51,7 +46,7 @@ function App() {
   return (
     <ErrorBoundary>
       <div className="container">
-        <header role="banner" style={{ marginBottom: '3rem', textAlign: 'center' }}>
+        <header role="banner" className="header-area">
           <h1 className="heading-primary">
             <Leaf size={40} aria-hidden="true" />
             CarbonFootprint Platform
@@ -63,13 +58,13 @@ function App() {
 
         <main id="main-content" role="main">
           {!footprintData ? (
-            <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+            <div className="calc-wrapper">
               <Calculator onComplete={setFootprintData} />
             </div>
           ) : (
             <div className="grid-results">
               <div>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+                <div className="toolbar">
                   <button
                     onClick={handleReset}
                     aria-label="Recalculate footprint"
@@ -81,7 +76,7 @@ function App() {
                 <Suspense fallback={<LoadingFallback />}>
                   <Dashboard data={footprintData} />
                 </Suspense>
-                <div style={{ marginTop: '2rem' }}>
+                <div className="section-gap">
                   <Suspense fallback={<LoadingFallback />}>
                     <ActionPlan data={footprintData} />
                   </Suspense>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { EcoAssistant } from '../EcoAssistant';
 import * as openaiLib from '../../lib/openai';
 
@@ -50,22 +50,30 @@ describe('EcoAssistant Component', () => {
     expect(input).toHaveValue('How to save energy?');
   });
 
-  test('displays user message after sending', () => {
+  test('displays user message after sending', async () => {
     (openaiLib.getEcoAdvice as jest.Mock).mockResolvedValue('Here is some advice.');
     render(<EcoAssistant />);
     const input = screen.getByPlaceholderText(/Ask for advice/i);
     fireEvent.change(input, { target: { value: 'test message' } });
     fireEvent.submit(input);
     expect(screen.getByText('test message')).toBeInTheDocument();
+    // Wait for async state updates to complete
+    await waitFor(() => {
+      expect(openaiLib.getEcoAdvice).toHaveBeenCalled();
+    });
   });
 
-  test('clears input after sending', () => {
+  test('clears input after sending', async () => {
     (openaiLib.getEcoAdvice as jest.Mock).mockResolvedValue('Advice.');
     render(<EcoAssistant />);
     const input = screen.getByPlaceholderText(/Ask for advice/i) as HTMLInputElement;
     fireEvent.change(input, { target: { value: 'test' } });
     fireEvent.submit(input);
     expect(input.value).toBe('');
+    // Wait for async state updates to complete
+    await waitFor(() => {
+      expect(openaiLib.getEcoAdvice).toHaveBeenCalled();
+    });
   });
 
   test('has accessible chat log with role="log"', () => {

@@ -14,12 +14,6 @@ interface EcoAssistantProps {
  * Provides a streaming conversation interface where users can ask for
  * personalized sustainability advice. Uses the `useChat` custom hook
  * for all state management and API interaction logic.
- *
- * Features:
- * - Real-time streaming responses from OpenAI
- * - Markdown rendering for formatted AI output
- * - Auto-scroll to latest messages
- * - Rate limiting and input sanitization (via openai.ts)
  */
 const EcoAssistantComponent: React.FC<EcoAssistantProps> = ({ footprintData }) => {
   const {
@@ -35,36 +29,24 @@ const EcoAssistantComponent: React.FC<EcoAssistantProps> = ({ footprintData }) =
     <div className="glass-panel animate-fade-in chat-container">
       <div className="chat-header">
         <Bot color="var(--accent-primary)" aria-hidden="true" />
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>EcoAssistant</h2>
+        <h2 className="heading-section">EcoAssistant</h2>
       </div>
 
-      <div
-        role="log"
-        aria-label="Chat messages"
-        aria-live="polite"
-        className="chat-log"
-      >
+      <div role="log" aria-label="Chat messages" aria-live="polite" className="chat-log">
         {messages.map((msg) => (
           <div
             key={msg.id}
-            style={{
-              alignSelf: msg.isUser ? 'flex-end' : 'flex-start',
-              maxWidth: '85%',
-              display: 'flex',
-              gap: '0.5rem',
-              alignItems: 'flex-start',
-            }}
+            className={`msg-row ${msg.isUser ? 'msg-row-user' : 'msg-row-bot'}`}
+            style={{ maxWidth: '85%' }}
           >
             {!msg.isUser && (
-              <div style={{ marginTop: '0.25rem', flexShrink: 0 }}>
+              <div className="msg-bot-icon">
                 <Bot size={20} color="var(--accent-primary)" />
               </div>
             )}
             <div
               className={`chat-bubble ${msg.isUser ? 'chat-bubble-user' : 'chat-bubble-bot'}`}
-              style={{
-                color: msg.isError ? 'var(--error-color)' : 'var(--text-primary)',
-              }}
+              style={{ color: msg.isError ? 'var(--error-color)' : undefined }}
             >
               {msg.isUser ? (
                 msg.text
@@ -77,7 +59,7 @@ const EcoAssistantComponent: React.FC<EcoAssistantProps> = ({ footprintData }) =
           </div>
         ))}
         {isLoading && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }} className="text-muted">
+          <div className="thinking-indicator text-muted">
             <Loader2 className="animate-spin" size={20} />
             <span>Thinking...</span>
           </div>

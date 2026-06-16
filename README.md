@@ -30,13 +30,16 @@ The problem statement required building a solution to help individuals understan
 | **Styling** | Vanilla CSS (Custom Properties) | Eco-Premium Dark Theme with Glassmorphism |
 | **Icons** | Lucide React | Lightweight, accessible iconography |
 | **AI Engine** | OpenAI API (Streaming) & React Markdown | Powers the `EcoAssistant` for real-time streaming advice |
+| **API Proxy** | Vercel Serverless Functions | Server-side API route (`/api/chat`) — API key never exposed to browser |
 | **State** | Custom Hooks + localStorage | Persistent footprint data and pledge tracking |
 | **Deployment** | Vercel | Automated CI/CD with GitHub integration |
-| **Testing** | Jest, React Testing Library | 46 tests across 5 test suites |
+| **Testing** | Jest, React Testing Library | 60+ tests across 7 test suites |
 
 ## 📁 Project Structure
 
 ```
+api/
+└── chat.js                  # Vercel serverless function — proxies OpenAI server-side
 src/
 ├── components/
 │   ├── ActionPlan.tsx       # Green Pledges based on footprint breakdown
@@ -60,6 +63,8 @@ src/
 ```
 
 ## 🛡️ Security Features
+- **Server-Side API Proxy**: The OpenAI API key is never exposed to the client. All AI requests are routed through a Vercel serverless function (`/api/chat`), ensuring the key stays server-side.
+- **Defense in Depth**: Input sanitization and validation happens on BOTH the client AND the server.
 - **Token Bucket Rate Limiter**: Client-side token bucket rate limiter (`RateLimiter` class) prevents API spam and abuse with configurable refill rates.
 - **Input Sanitization**: All user inputs are scrubbed of HTML tags, `javascript:` protocols, event handlers, and data URIs via `sanitizeInput()`.
 - **Length Constraints**: Inputs are truncated to 1000 characters (configurable via `MAX_INPUT_LENGTH` constant).
@@ -73,6 +78,7 @@ src/
 
 ## ⚡ Performance Optimizations (Efficiency)
 - **Code Splitting**: `Dashboard`, `EcoAssistant`, and `ActionPlan` are loaded via `React.lazy()` + `<Suspense>` to minimize initial bundle size.
+- **Dynamic Import**: The `openai` SDK is dynamically imported only as a fallback, keeping it out of the main client bundle.
 - **Memoization**: All components wrapped in `React.memo`; handlers use `useCallback`; derived values use `useMemo`.
 - **CSS Containment**: `contain: content` on glass panels and `will-change` on animated elements for compositing optimization.
 - **Resource Hints**: `<link rel="preconnect">` and `<link rel="dns-prefetch">` for external domains in `index.html`.
@@ -82,7 +88,7 @@ src/
 
 ## 🧪 Testing
 
-**46 tests across 5 test suites**, co-located alongside the code they test:
+**60+ tests across 7 test suites**, co-located alongside the code they test:
 
 | Suite | Tests | Covers |
 | :--- | :---: | :--- |
@@ -91,6 +97,8 @@ src/
 | `Calculator.test.tsx` | 8 | Step progression, emission calc, a11y |
 | `Dashboard.test.tsx` | 7 | Rendering, above/below avg, a11y |
 | `EcoAssistant.test.tsx` | 9 | Chat interaction, input, streaming, a11y |
+| `ActionPlan.test.tsx` | 8 | Pledge rendering, toggle, localStorage, a11y |
+| `ErrorBoundary.test.tsx` | 5 | Error catching, fallback UI, recovery |
 
 Run tests:
 ```bash
