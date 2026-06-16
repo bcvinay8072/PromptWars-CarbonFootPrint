@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Car, Utensils, Zap, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Car, Utensils, Zap, ShoppingBag } from 'lucide-react';
 import { EmissionData } from '../lib/utils';
 
 interface CalculatorProps {

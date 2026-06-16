@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Loader2 } from 'lucide-react';
+import { Send, Bot, Loader2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { getEcoAdvice } from '../lib/openai';
 import { EmissionData, ChatMessage } from '../lib/utils';
