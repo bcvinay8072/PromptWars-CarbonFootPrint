@@ -152,12 +152,10 @@ export const getEcoAdvice = async (
     const result = await streamFromServer(safeMessage, systemPrompt, onChunk);
     return result || 'I could not generate an answer at this time.';
   } catch (serverError) {
-    console.warn('[EcoAssistant] Server proxy unavailable, falling back to client:', serverError);
     try {
       const result = await streamFromClient(safeMessage, systemPrompt, onChunk);
       return result || 'I could not generate an answer at this time.';
     } catch (clientError) {
-      console.error('[EcoAssistant] Client fallback also failed:', clientError);
       throw new Error('Failed to connect to the EcoAssistant. Please check your connection.');
     }
   }
